@@ -1,0 +1,56 @@
+services:
+  app:
+    build: .
+    container_name: nube-app
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+      - ./docker/php/uploads.ini:/usr/local/etc/php/conf.d/uploads.ini:ro
+    depends_on:
+      - db
+
+  web:
+    image: nginx:alpine
+    container_name: nube-web
+    ports:
+      - "8080:80"
+    volumes:
+      - ./:/var/www/html
+      - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - app
+
+  composer:
+    image: composer:2
+    working_dir: /var/www/html
+    volumes:
+      - ./:/var/www/html
+      - vendor_data:/var/www/html/vendor
+
+  db:
+    image: mysql:8.0
+    container_name: miapp-db
+    environment:
+      MYSQL_DATABASE: miapp
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_USER: miapp
+      MYSQL_PASSWORD: secret
+    ports:
+      - "3307:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+  node:
+    image: node:20
+    working_dir: /var/www/html
+    volumes:
+    - ./:/var/www/html
+    - vendor_data:/var/www/html/vendor
+    - node_modules_data:/var/www/html/node_modules
+    ports:
+    - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+volumes:
+  db_data:
+  vendor_data:
+  node_modules_data:
