@@ -33,3 +33,10 @@ Microsoft/
 check_users.php
 create_admin.php
 set_admin_role.php
+
+# Agent/tooling instructions not needed in public repo
+.agents/
+.opencode/
+AGENTS.md
+skills-lock.json
+DEBUG_DESCARGA_PROGRESO.md
